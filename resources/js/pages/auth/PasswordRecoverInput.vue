@@ -74,13 +74,9 @@ export default {
                         token: this.token
                     })
                         .then(response => {
-                            if (response.data.success) {
-                                this.success = response.data.success;
-                                this.statusMsg = response.data.message;
-                            } else {
-                                this.success = response.data.success;
-                                this.statusMsg = response.data.message;
-                            }
+
+                            this.success = response.data.success;
+                            this.statusMsg = response.data.message;
                             this.loading = false;
                         })
                         .catch(function (error) {

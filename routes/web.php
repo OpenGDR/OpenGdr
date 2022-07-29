@@ -15,5 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/recupero-password/{token}/', [HomeController::class, 'recoverPassword'])->name('password.reset');
+Route::get('email/verify/{id}/{hash}', [HomeController::class, 'app'])->name('verification.verify');
+Route::post('email/resend', [HomeController::class, 'app'])->name('verification.resend');
 
 Route::get('{any}', [HomeController::class, 'app'])->where('any', '.*');

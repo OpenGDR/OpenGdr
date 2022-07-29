@@ -24,3 +24,5 @@ L'utente è inserito di default nel seeder con altre utenze create random
 -   [x] [Font Awesome](https://fontawesome.com/)
 -   [x] [Bootstrap](https://getbootstrap.com/)
 -   [x] [vue.js](https://vuejs.org/)
+-   [x] [Vue Notification](https://www.npmjs.com/package/@kyvg/vue3-notification)
+-   [x] [Tiny Emitter](https://github.com/scottcorgan/tiny-emitter)

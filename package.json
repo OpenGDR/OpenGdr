@@ -18,5 +18,11 @@
         "vue": "^3.2.36",
         "vue-loader": "^17.0.0",
         "vue-router": "^4.0.13"
+    },
+    "dependencies": {
+        "@kyvg/vue3-notification": "^2.3.6",
+        "moment": "^2.29.4",
+        "tiny-emitter": "^2.1.0",
+        "vue3-datepicker": "^0.3.4"
     }
 }

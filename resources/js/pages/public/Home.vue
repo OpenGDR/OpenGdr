@@ -14,6 +14,11 @@ export default {
     },
     created() {
     },
-    methods: {}
+    mounted() {
+        if (window.openGDR.isLoggedin) {
+            this.$router.push('/dashboard')
+        }
+    },
+    methods: {},
 }
 </script>

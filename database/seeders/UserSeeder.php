@@ -18,7 +18,9 @@ class UserSeeder extends Seeder
 
         if ($adminExist == 0) {
             $admin = User::create([
+                'username' => 'admin',
                 'email' => 'admin@test.it',
+                'date_of_birth' => '1985-05-25',
                 'password' => \Illuminate\Support\Facades\Hash::make('admin'),
                 'email_verified_at' => now(),
                 'level' => User::LEVEL_ADMIN,

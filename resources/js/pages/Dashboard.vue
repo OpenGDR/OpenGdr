@@ -1,6 +1,6 @@
 <template>
     <div>
-        Welcome {{ name }}
+        Welcome
     </div>
 </template>
 
@@ -9,17 +9,15 @@ export default {
     name: "Dashboard",
     data() {
         return {
-            name: null,
         }
     },
     created() {
-        if (window.openGDR.user) {
-            this.name = window.openGDR.user.name
-        }
+    },
+    mounted() {
     },
     beforeRouteEnter(to, from, next) {
         if (!window.openGDR.isLoggedin) {
-            window.location.href = "/";
+            this.$router.push('/')
         }
         next();
     }

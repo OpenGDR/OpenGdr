@@ -10,6 +10,7 @@ import { createApp } from 'vue';
 import App from './components/App.vue'
 import router from './router'
 import axios from 'axios'
+import Notifications from '@kyvg/vue3-notification'
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -20,4 +21,5 @@ import axios from 'axios'
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;
 app.use(router);
+app.use(Notifications);
 app.mount('#app');

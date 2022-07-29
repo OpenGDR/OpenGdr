@@ -23,14 +23,15 @@ Route::group(
         Route::post('recover-post', [UserController::class, 'recoverPost']);
         Route::post('register', [UserController::class, 'register']);
         Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+        Route::post('email-verify', [UserController::class, 'emailVerify'])->middleware('auth:sanctum');
+        Route::post('email-resend', [UserController::class, 'emailResend'])->middleware('auth:sanctum');
     }
 );
 
-/* Route::group(['prefix' => 'books', 'middleware' => 'auth:sanctum'], function () {
-    Route::get('/', [BookController::class, 'index']);
-    Route::post('add', [BookController::class, 'add']);
-    Route::get('edit/{id}', [BookController::class, 'edit']);
-    Route::post('update/{id}', [BookController::class, 'update']);
-    Route::delete('delete/{id}', [BookController::class, 'delete']);
-});
- */
+
+Route::group(
+    ['prefix' => 'user', 'middleware' => 'auth:sanctum'],
+    function () {
+        Route::get('data', [UserController::class, 'getUserData']);
+    }
+);

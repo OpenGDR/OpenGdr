@@ -1,12 +1,25 @@
 import { createWebHistory, createRouter } from "vue-router";
+import emitter from '../emitter';
 
+/**
+ * PUBBLICI
+ */
 import Home from '../pages/public/Home.vue';
 import About from '../pages/public/About.vue';
+
+/**
+ * AUTH
+ */
 import Register from '../pages/auth/Register.vue';
 import Login from '../pages/auth/Login.vue';
 import PasswordRecover from '../pages/auth/PasswordRecover.vue';
 import PasswordRecoverInput from '../pages/auth/PasswordRecoverInput.vue';
+import EmailVerify from '../pages/auth/EmailVerify.vue';
+import RequestEmailVerification from '../pages/auth/RequestEmailVerification.vue';
+
 import Dashboard from '../pages/Dashboard.vue';
+
+
 
 export const routes = [
     {
@@ -40,6 +53,16 @@ export const routes = [
         component: PasswordRecoverInput
     },
     {
+        name: 'verifica-email',
+        path: '/email/verify/:id/:hash',
+        component: EmailVerify
+    },
+    {
+        name: 'utente-non-verificato',
+        path: '/utente-non-verificato',
+        component: RequestEmailVerification
+    },
+    {
         name: 'dashboard',
         path: '/dashboard',
         component: Dashboard
@@ -50,5 +73,9 @@ const router = createRouter({
     history: createWebHistory(),
     routes: routes,
 });
+
+router.beforeEach((to, from) => {
+    emitter.$emit('user:update');
+})
 
 export default router;
