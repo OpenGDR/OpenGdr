@@ -6,23 +6,23 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+
+
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * Rotta base per tutte le richieste
      */
-    public function __construct()
+    public function app()
     {
-        $this->middleware('auth');
+        return view('app');
     }
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Rotta specifica per il recupero password
      */
-    public function index()
+    public function recoverPassword(Request $request, $token)
     {
-        return view('home');
+        return view('app')->with(
+            ['email' => $request->email]
+        );
     }
 }

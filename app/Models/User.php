@@ -15,30 +15,72 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'name',
+        'surname',
+        'date_of_birth',
+        'motto',
+        'description',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * The attributes that should be hidden for arrays.
      *
-     * @var array<int, string>
+     * @var array
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
     /**
-     * The attributes that should be cast.
+     * The attributes that should be cast to native types.
      *
-     * @var array<string, string>
+     * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'date_of_birth' => 'date:Y-m-d'
     ];
+
+    protected $dates = [
+        'deleted_at',
+        'banned_at',
+        'email_verified_at',
+    ];
+
+    /**
+     * Livelli Utente
+     */
+    const LEVEL_USER = 0;
+    const LEVEL_ADMIN = 1;
+
+
+    /**
+     * Verifica se l'utente è un amministratore
+     */
+    public function isAdmin()
+    {
+        return $this->level == User::LEVEL_ADMIN;
+    }
+
+    /**
+     * Restituisce la label del livello utente
+     *
+     * @return void
+     */
+    public function getLevelLabelAttribute()
+    {
+        switch ($this->level) {
+            case self::LEVEL_ADMIN:
+                return 'Amministratore';
+                break;
+            case self::LEVEL_USER:
+            default:
+                return 'Utente';
+                break;
+        }
+    }
 }

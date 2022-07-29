@@ -13,12 +13,12 @@ export default {
         }
     },
     created() {
-        if (window.Laravel.user) {
-            this.name = window.Laravel.user.name
+        if (window.openGDR.user) {
+            this.name = window.openGDR.user.name
         }
     },
     beforeRouteEnter(to, from, next) {
-        if (!window.Laravel.isLoggedin) {
+        if (!window.openGDR.isLoggedin) {
             window.location.href = "/";
         }
         next();

@@ -13,16 +13,16 @@
     <body>
         @if (Auth::check())
         <script>
-            window.Laravel = {!!json_encode([
-            'isLoggedin' => true,
-            'user' => Auth::user()
+            window.openGDR = {!!json_encode([
+            'isLoggedin' => true
         ])!!}
         </script>
         @else
         <script>
-            window.Laravel = {!!json_encode([
-            'isLoggedin' => false
-        ])!!}
+            window.openGDR = {!!json_encode(['isLoggedin' => false])!!}
+            @isset($email)
+                window.openGDR.recoverPassword = {!!json_encode(['email' => $email])!!}
+            @endisset
         </script>
         @endif
         <div id="app">

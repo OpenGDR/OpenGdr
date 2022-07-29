@@ -62,7 +62,7 @@ export default {
             e.preventDefault()
             if (this.password.length > 0) {
                 axios.get('/sanctum/csrf-cookie').then(response => {
-                    axios.post('api/register', {
+                    axios.post('/api/auth/register', {
                         name: this.name,
                         email: this.email,
                         password: this.password
@@ -82,7 +82,7 @@ export default {
         }
     },
     beforeRouteEnter(to, from, next) {
-        if (window.Laravel.isLoggedin) {
+        if (window.openGDR.isLoggedin) {
             return next('dashboard');
         }
         next();

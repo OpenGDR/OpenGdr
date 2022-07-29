@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
-use Session;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -43,25 +45,61 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password,
-        ];
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
         if (Auth::attempt($credentials)) {
-            $success = true;
-            $message = 'User login successfully';
+            return $this->sendResponseAPI(true, 'User login successfully');
         } else {
-            $success = false;
-            $message = 'Unauthorised';
+            return $this->sendResponseAPI(false, 'The provided credentials do not match our records.');
         }
+    }
 
-        // response
-        $response = [
-            'success' => $success,
-            'message' => $message,
-        ];
-        return response()->json($response);
+    /**
+     * Recover Password
+     */
+    public function recover(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+        if ($status === Password::RESET_LINK_SENT) {
+            return $this->sendResponseAPI(true, $status);
+        } else {
+            return $this->sendResponseAPI(false, __($status));
+        }
+    }
+
+    public function recoverPost(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(\Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status === Password::PASSWORD_RESET) {
+            return $this->sendResponseAPI(true, $status);
+        } else {
+            return $this->sendResponseAPI(false, __($status));
+        }
     }
 
     /**
@@ -70,19 +108,10 @@ class UserController extends Controller
     public function logout()
     {
         try {
-            Session::flush();
-            $success = true;
-            $message = 'Successfully logged out';
+            \Session::flush();
+            return $this->sendResponseAPI(true, 'Successfully logged out');
         } catch (\Illuminate\Database\QueryException $ex) {
-            $success = false;
-            $message = $ex->getMessage();
+            return $this->sendResponseAPI(false, $ex->getMessage());
         }
-
-        // response
-        $response = [
-            'success' => $success,
-            'message' => $message,
-        ];
-        return response()->json($response);
     }
 }
