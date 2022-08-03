@@ -13,6 +13,10 @@ import axios from 'axios'
 import Notifications from '@kyvg/vue3-notification'
 
 /**
+ * Store data
+ */
+import User from './store/User';
+/**
  * Next, we will create a fresh Vue application instance. You may then begin
  * registering components with the application instance so they are ready
  * to use in your application's views. An example is included for you.
@@ -21,5 +25,6 @@ import Notifications from '@kyvg/vue3-notification'
 const app = createApp(App);
 app.config.globalProperties.$axios = axios;
 app.use(router);
+app.use(User);
 app.use(Notifications);
 app.mount('#app');

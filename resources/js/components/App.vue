@@ -7,26 +7,44 @@
 <script>
 import NavBar from '../partials/NavBar.vue'
 import emitter from '../emitter'
-export default {
+import { mapActions, mapGetters } from 'vuex'
 
+export default {
     components: { NavBar },
+    computed: {
+        ...mapGetters([
+            'userData',
+        ])
+    },
     data() {
-        return {
-            user: null
-        };
+        return {};
     },
     created() {
         emitter.$on('auth:resend-new-email', this.resendEmailVerification)
-        emitter.$on('user:update', this.getUserData)
+        emitter.$on('user:update', this.getUserDataEvent)
 
         emitter.$on('notify', this.notify)
     },
     mounted() {
         if (window.openGDR.isLoggedin && this.user == null) {
-            this.getUserData();
+            //this.getUserData();
         }
     },
     methods: {
+        ...mapActions([
+            'getUserData',
+        ]),
+        getUserDataEvent() {
+            this.getUserData(() => {
+
+                /**Verifica se l'email è stata verificata */
+                if (this.userData.email_verified_at == null &&
+                    this.$router.currentRoute.value.name != 'utente-non-verificato' &&
+                    this.$router.currentRoute.value.name != 'verifica-email') {
+                    this.$router.push('/utente-non-verificato');
+                }
+            })
+        },
         notify(status, message) {
             this.$notify({
                 type: status ? 'success' : 'error',
@@ -35,7 +53,6 @@ export default {
             });
         },
         resendEmailVerification() {
-            console.log('resendEmailVerification');
             this.$axios.get('/sanctum/csrf-cookie').then(response => {
                 this.$axios.post('/api/auth/email-resend', {})
                     .then(response => {
@@ -43,28 +60,6 @@ export default {
                     })
                     .catch(function (error) {
                         console.error(error);
-                    });
-            })
-        },
-        getUserData() {
-            if (!window.openGDR.isLoggedin) {
-                return;
-            }
-            this.$axios.get('/sanctum/csrf-cookie').then(response => {
-                this.$axios.get('/api/user/data', {})
-                    .then(response => {
-                        console.log(response.data);
-                        if(response.data.success){
-                            this.user = response.data.data;
-                            if (this.user.email_verified_at == null &&
-                                this.$router.currentRoute.value.name != 'utente-non-verificato' &&
-                                this.$router.currentRoute.value.name != 'verifica-email') {
-                                    this.$router.push('/utente-non-verificato');
-                            }
-                        }
-                    })
-                    .catch(function (error) {
-                        this.$router.push('/')
                     });
             })
         }
