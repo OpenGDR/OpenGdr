@@ -202,4 +202,19 @@ class UserController extends Controller
 
         return $this->sendResponseAPI(true, 'Update successfully');
     }
+
+    /**
+     * aggiornamento della password
+     */
+    public function updateUserPassword(Request $request)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed', Rules\Password::defaults()]
+        ]);
+
+        $request->user()->password = Hash::make($request->password);
+        $request->user()->save();
+
+        return $this->sendResponseAPI(true, 'Update successfully');
+    }
 }

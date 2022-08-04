@@ -34,5 +34,6 @@ Route::group(
     function () {
         Route::get('data', [UserController::class, 'getUserData']);
         Route::post('general', [UserController::class, 'updateUserDataGeneral']);
+        Route::post('new-password', [UserController::class, 'updateUserPassword']);
     }
 );
