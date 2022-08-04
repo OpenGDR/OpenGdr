@@ -36,7 +36,9 @@
                                     Impostazioni
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Action</a></li>
+                                    <li>
+                                        <router-link to="/utente/profilo" class="dropdown-item" href="#">Profilo</router-link>
+                                    </li>
                                     <li><a class="dropdown-item" href="#">Another action</a></li>
                                     <li><a class="dropdown-item" href="#">Something else here</a></li>
                                 </ul>

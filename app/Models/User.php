@@ -44,11 +44,19 @@ class User extends Authenticatable
         'date_of_birth' => 'date:Y-m-d'
     ];
 
+    /**
+     * Date
+     */
     protected $dates = [
         'deleted_at',
         'banned_at',
         'email_verified_at',
     ];
+
+    /**
+     * appends custom attributes
+     */
+    protected $appends = ['level_label'];
 
     /**
      * Livelli Utente

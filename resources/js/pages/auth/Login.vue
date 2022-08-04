@@ -42,6 +42,8 @@
 }
 </style>
 <script>
+import emitter from '../../emitter';
+
 export default {
     data() {
         return {
@@ -69,6 +71,7 @@ export default {
                             if (response.data.success) {
                                 this.success = response.data.success;
                                 this.statusMsg = response.data.message;
+                                emitter.$emit('loading', true);
                                 setTimeout(() => {
                                     this.$router.go('/dashboard')
                                 }, 2000)

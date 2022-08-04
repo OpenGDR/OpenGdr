@@ -17,6 +17,11 @@ import PasswordRecoverInput from '../pages/auth/PasswordRecoverInput.vue';
 import EmailVerify from '../pages/auth/EmailVerify.vue';
 import RequestEmailVerification from '../pages/auth/RequestEmailVerification.vue';
 
+/**
+ * Utente
+ */
+import UtenteProfilo from '../pages/user/Profilo.vue';
+
 import Dashboard from '../pages/Dashboard.vue';
 
 
@@ -61,6 +66,11 @@ export const routes = [
         name: 'utente-non-verificato',
         path: '/utente-non-verificato',
         component: RequestEmailVerification
+    },
+    {
+        name: 'utente-profilo',
+        path: '/utente/profilo',
+        component: UtenteProfilo
     },
     {
         name: 'dashboard',

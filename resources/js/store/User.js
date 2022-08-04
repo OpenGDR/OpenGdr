@@ -28,8 +28,8 @@ const user = createStore({
                     .then(response => {
                         if (response.data.success) {
                             state.user = response.data.data;
-                            callback();
                         }
+                        callback();
                     })
                     .catch(function (error) {
                         console.error(error);

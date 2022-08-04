@@ -33,5 +33,6 @@ Route::group(
     ['prefix' => 'user', 'middleware' => 'auth:sanctum'],
     function () {
         Route::get('data', [UserController::class, 'getUserData']);
+        Route::post('general', [UserController::class, 'updateUserDataGeneral']);
     }
 );

@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -178,5 +179,27 @@ class UserController extends Controller
         }
 
         return $this->sendResponseAPI(true, '', $request->user());
+    }
+
+    /**
+     * Aggiornamento dati generali utente
+     */
+    public function updateUserDataGeneral(Request $request)
+    {
+
+        $value = $request->validate([
+            'username' => ['required', Rule::unique('users', 'username')->ignore($request->user()->id, 'id'),],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($request->user()->id, 'id'),],
+            'date_of_birth' => 'required|date_format:Y-m-d',
+            'motto' => ''
+        ]);
+        $request->user()->username = $value['username'];
+        $request->user()->email = $value['email'];
+        $request->user()->date_of_birth = $value['date_of_birth'];
+        $request->user()->motto = $value['motto'];
+
+        $request->user()->save();
+
+        return $this->sendResponseAPI(true, 'Update successfully');
     }
 }

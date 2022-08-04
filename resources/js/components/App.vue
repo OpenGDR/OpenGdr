@@ -1,8 +1,24 @@
 <template>
+    <div class="loader d-flex align-items-center justify-content-center bg-black bg-opacity-25" v-if="loader">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     <nav-bar></nav-bar>
     <router-view />
-    <notifications />
+    <notifications position="bottom right" />
 </template>
+
+<style scoped>
+    .loader{
+        position: fixed;
+        z-index: 999999;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+    }
+</style>
 
 <script>
 import NavBar from '../partials/NavBar.vue'
@@ -17,17 +33,25 @@ export default {
         ])
     },
     data() {
-        return {};
+        return {
+            loader: true,
+        };
     },
     created() {
         emitter.$on('auth:resend-new-email', this.resendEmailVerification)
         emitter.$on('user:update', this.getUserDataEvent)
 
         emitter.$on('notify', this.notify)
+        emitter.$on('loading', this.loaderStatus)
     },
     mounted() {
-        if (window.openGDR.isLoggedin && this.user == null) {
-            //this.getUserData();
+        if (!window.openGDR.isLoggedin) {
+            this.loader = false;
+        }
+    },
+    watch: {
+        userData(newUserData, oldUserData) {
+            this.loader = false;
         }
     },
     methods: {
@@ -35,8 +59,13 @@ export default {
             'getUserData',
         ]),
         getUserDataEvent() {
-            this.getUserData(() => {
+            this.loader = true;
 
+            if (!window.openGDR.isLoggedin) {
+                this.loader = false;
+            }
+            this.getUserData(() => {
+                this.loader = false;
                 /**Verifica se l'email è stata verificata */
                 if (this.userData.email_verified_at == null &&
                     this.$router.currentRoute.value.name != 'utente-non-verificato' &&
@@ -62,6 +91,9 @@ export default {
                         console.error(error);
                     });
             })
+        },
+        loaderStatus(status = false) {
+            this.loader = status;
         }
     }
 }
