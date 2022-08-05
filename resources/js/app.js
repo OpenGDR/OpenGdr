@@ -16,15 +16,15 @@ import Notifications from '@kyvg/vue3-notification'
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPen, faCalendarDays, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add(faUser, faPen)
+library.add(faUser, faPen, faCalendarDays, faCircleExclamation)
 
 /**
  * Store data
  */
-import User from './store/User';
+import Storage from './Storage';
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -38,7 +38,7 @@ app.config.globalProperties.$axios = axios;
 app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.use(router);
-app.use(User);
+app.use(Storage);
 app.use(Notifications);
 
 app.mount('#app');

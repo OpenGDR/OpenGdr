@@ -7,8 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
@@ -58,6 +60,14 @@ class UserController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->banned == 1) {
+                return $this->sendResponseAPI(false, 'User is Banned');
+            }
+
+            $user->last_login = Carbon::now();
+            $user->save();
+
             return $this->sendResponseAPI(true, 'User login successfully');
         } else {
             return $this->sendResponseAPI(false, 'The provided credentials do not match our records.');
@@ -159,9 +169,13 @@ class UserController extends Controller
     /**
      * Logout
      */
-    public function logout()
+    public function logout(Request $request)
     {
         try {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             \Session::flush();
             return $this->sendResponseAPI(true, 'Successfully logged out');
         } catch (\Illuminate\Database\QueryException $ex) {
@@ -172,13 +186,22 @@ class UserController extends Controller
     /**
      * Recupero i dati dell'utente
      */
-    public function getUserData(Request $request)
+    public function getUserData(Request $request, $id = null)
     {
         if (!Auth::check()) {
             return $this->sendResponseAPI(false, 'User not logged');
         }
 
-        return $this->sendResponseAPI(true, '', $request->user());
+        if (is_null($id)) {
+            $user = $request->user();
+        } else {
+            $user = User::where('id', $id)->first();
+        }
+        if (!Gate::allows('view', $user)) {
+            abort(403);
+        }
+
+        return $this->sendResponseAPI(true, '', $user);
     }
 
     /**
@@ -188,17 +211,23 @@ class UserController extends Controller
     {
 
         $value = $request->validate([
-            'username' => ['required', Rule::unique('users', 'username')->ignore($request->user()->id, 'id'),],
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($request->user()->id, 'id'),],
+            'id' => ['required'],
+            'username' => ['required', Rule::unique('users', 'username')->ignore($request->id, 'id'),],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($request->id, 'id'),],
             'date_of_birth' => 'required|date_format:Y-m-d',
             'motto' => ''
         ]);
-        $request->user()->username = $value['username'];
-        $request->user()->email = $value['email'];
-        $request->user()->date_of_birth = $value['date_of_birth'];
-        $request->user()->motto = $value['motto'];
+        $user = User::where('id', $value['id'])->first();
 
-        $request->user()->save();
+        if (!Gate::allows('update', $user)) {
+            abort(403);
+        }
+        $user->username = $value['username'];
+        $user->email = $value['email'];
+        $user->date_of_birth = $value['date_of_birth'];
+        $user->motto = $value['motto'];
+
+        $user->save();
 
         return $this->sendResponseAPI(true, 'Update successfully');
     }
@@ -208,12 +237,22 @@ class UserController extends Controller
      */
     public function updateUserPassword(Request $request)
     {
-        $request->validate([
+
+        if (!Gate::allows('update', $request->user())) {
+            abort(403);
+        }
+        $value = $request->validate([
+            'id' => ['required'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()]
         ]);
+        $user = User::where('id', $value['id'])->first();
 
-        $request->user()->password = Hash::make($request->password);
-        $request->user()->save();
+        if (!Gate::allows('update', $user)) {
+            abort(403);
+        }
+
+        $user->password = Hash::make($value['password']);
+        $user->save();
 
         return $this->sendResponseAPI(true, 'Update successfully');
     }

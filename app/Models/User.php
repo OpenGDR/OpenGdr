@@ -8,9 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -41,7 +43,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'date_of_birth' => 'date:Y-m-d'
+        'date_of_birth' => 'date:Y-m-d',
+        'email_verified_at' => 'date:d/m/Y H:i',
+        'banned_at' => 'date:d/m/Y H:i',
+        'created_at' => 'date:d/m/Y H:i',
+        'last_login' => 'date:d/m/Y H:i',
     ];
 
     /**
@@ -51,6 +57,7 @@ class User extends Authenticatable
         'deleted_at',
         'banned_at',
         'email_verified_at',
+        'last_login',
     ];
 
     /**
@@ -71,6 +78,11 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->level == User::LEVEL_ADMIN;
+    }
+
+    public function isNotBanned()
+    {
+        return $this->banned == 0;
     }
 
     /**

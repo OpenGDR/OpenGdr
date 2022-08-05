@@ -69,7 +69,7 @@ export const routes = [
     },
     {
         name: 'utente-profilo',
-        path: '/utente/profilo',
+        path: '/utente/profilo/:id',
         component: UtenteProfilo
     },
     {

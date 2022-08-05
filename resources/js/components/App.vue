@@ -1,5 +1,5 @@
 <template>
-    <div class="loader d-flex align-items-center justify-content-center bg-black bg-opacity-25" v-if="loader">
+    <div class="loader d-flex align-items-center justify-content-center bg-black bg-opacity-25" v-if="generalLoading">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
@@ -30,11 +30,11 @@ export default {
     computed: {
         ...mapGetters([
             'userData',
+            'generalLoading'
         ])
     },
     data() {
         return {
-            loader: true,
         };
     },
     created() {
@@ -57,29 +57,32 @@ export default {
     methods: {
         ...mapActions([
             'getUserData',
+            'updateLoaging',
         ]),
         getUserDataEvent() {
-            this.loader = true;
+            this.updateLoaging(true);
 
             if (!window.openGDR.isLoggedin) {
-                this.loader = false;
+                this.updateLoaging(false);
             }
             this.getUserData(() => {
-                this.loader = false;
                 /**Verifica se l'email è stata verificata */
                 if (this.userData.email_verified_at == null &&
                     this.$router.currentRoute.value.name != 'utente-non-verificato' &&
                     this.$router.currentRoute.value.name != 'verifica-email') {
                     this.$router.push('/utente-non-verificato');
                 }
+                this.updateLoaging(false);
             })
         },
         notify(status, message) {
-            this.$notify({
-                type: status ? 'success' : 'error',
-                text: message,
-                duration: 2000
-            });
+            if (message) {
+                this.$notify({
+                    type: status ? 'success' : 'error',
+                    text: message,
+                    duration: 2000
+                });
+            }
         },
         resendEmailVerification() {
             this.$axios.get('/sanctum/csrf-cookie').then(response => {
@@ -93,7 +96,7 @@ export default {
             })
         },
         loaderStatus(status = false) {
-            this.loader = status;
+            this.updateLoaging(status);
         }
     }
 }

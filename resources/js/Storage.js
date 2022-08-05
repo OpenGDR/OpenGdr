@@ -1,13 +1,17 @@
 import axios from 'axios'
 import { createStore } from "vuex";
 
-const user = createStore({
+const storage = createStore({
     state: {
+        loading: false,
         user: {},
     },
     mutations: {
     },
     getters: {
+        generalLoading(state) {
+            return state.loading;
+        },
         userData(state) {
             return state.user;
         },
@@ -19,6 +23,9 @@ const user = createStore({
         }
     },
     actions: {
+        updateLoaging({ state }, status) {
+            state.loading = status;
+        },
         getUserData({ state }, callback) {
             if (!window.openGDR.isLoggedin) {
                 return;
@@ -40,4 +47,4 @@ const user = createStore({
 });
 
 
-export default user;
+export default storage;

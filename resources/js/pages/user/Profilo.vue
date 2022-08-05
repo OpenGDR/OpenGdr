@@ -5,20 +5,69 @@
                 <div class=" d-flex align-items-center p-3 text-white bg-primary rounded shadow-sm ">
                     <font-awesome-icon icon="fa-solid fa-user" class="fa-2x" />
                     <div class="lh-1 ms-3">
-                        <h1 class="h5 mb-0 text-white lh-1">Profilo utente : <strong>{{ userData.username }}</strong></h1>
-                        <small>Livello {{ userData.level_label }}</small>
+                        <h1 class="h5 mb-0 text-white lh-1 mb-1">Profilo utente : <strong>{{ data.username }}</strong></h1>
+                        <div class="badge bg-success">
+                            {{ data.level_label }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row mb-3" v-if="isAdmin && !generalLoading">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="me-auto h5">
+                            Amministrazione
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-4 col-lg-3 mb-3">
+                                <font-awesome-icon icon="fa-solid fa-calendar-days" class="me-1" /> Creato il<br /> {{ data.created_at }}
+                            </div>
+                            <div class="col-4 col-lg-3 mb-3">
+                                <div v-if="data.banned == 1">
+                                    <font-awesome-icon class="text-danger me-1" icon="fa-solid fa-circle-exclamation" /> Bannato il<br /> {{ data.banned_at }}
+                                </div>
+                                <div v-else>
+                                    Utente attivo
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-3 mb-3">
+                                <div v-if="data.email_verified_at != null">
+                                    Email verificata il<br /> {{ data.email_verified_at }}
+                                </div>
+                                <div v-else>
+                                    <font-awesome-icon class="text-danger me-1" icon="fa-solid fa-circle-exclamation" /> Email non verificata
+                                </div>
+                            </div>
+                            <div class="col-4 col-lg-3 mb-3">
+                                <div v-if="data.last_login != null">
+                                    <font-awesome-icon icon="fa-solid fa-calendar-days" class="me-1" /> Ultimo accesso: <br />{{ data.last_login }}
+                                </div>
+                                <div v-else>
+                                    <font-awesome-icon class="text-danger me-1" icon="fa-solid fa-circle-exclamation" /> Nessun accesso eseguito
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer justify-content-end d-flex" v-if="data.id != userData.id && data.level != 1">
+                        <button v-if="data.banned == 0" type="button" @click="bannedUser" class="btn btn-danger">Banna</button>
+                        <button v-else type="button" @click="bannedUser" class="btn btn-outline-danger">Rimuovi ban</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row mb-3">
             <div class="col col-lg-6">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h2 class="me-auto h5">
                             Informazioni generali
                         </h2>
-                        <div class="btn btn-sm" :class="{ 'btn-outline-primary': !editSection.includes('general'), 'btn-success': editSection.includes('general') }" @click.stop="edit('general')">
+                        <div v-if="permission.edit" class="btn btn-sm" :class="{ 'btn-outline-primary': !editSection.includes('general'), 'btn-success': editSection.includes('general') }" @click.stop="edit('general')">
                             <font-awesome-icon icon="fa-solid fa-pen" class="me-1" /> Modifica
                         </div>
                     </div>
@@ -55,12 +104,12 @@
                         </div>
 
                     </div>
-                    <div class="card-footer d-flex">
+                    <div class="card-footer d-flex" v-if="permission.edit">
                         <button @click.stop="saveGeneral" class="btn btn-primary ms-auto" :disabled="!editSection.includes('general')">Salva</button>
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6">
+            <div class="col col-lg-6" v-if="permission.edit">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h2 class="me-auto h5">
@@ -103,19 +152,27 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'userData'
+            'generalLoading',
+            'userData',
+            'isAdmin'
         ])
     },
     data() {
         return {
+            data: {},
             editSection: [],
+            permission: {
+                edit: false
+            },
             general: {
+                id: null,
                 username: null,
                 email: null,
                 date_of_birth: null,
                 motto: '',
             },
             password: {
+                id: null,
                 password: null,
                 password_confirmation: null
             },
@@ -124,6 +181,52 @@ export default {
                 password: {}
             }
         }
+    },
+    mounted() {
+
+        this.$axios.get('/sanctum/csrf-cookie').then(response => {
+            this.$axios.get('/api/auth/check/view/user/' + this.$route.params.id, {})
+                .then(response => {
+                    if (!response.data.success) {
+                        emitter.$emit('notify', response.data.success, response.data.message);
+                        this.$router.push('/');
+                        return;
+                    }
+                    this.$axios.get('/api/user/data/' + this.$route.params.id, {})
+                        .then(response => {
+                            if (!response.data.success) {
+                                emitter.$emit('notify', response.data.success, response.data.message);
+                                this.$router.push('/');
+                                return;
+                            } else {
+                                this.data = response.data.data;
+                                this.general.id = this.data.id;
+                                this.password.id = this.data.id;
+
+
+                                this.general.username = this.data.username;
+                                this.general.email = this.data.email;
+                                this.general.date_of_birth = moment(this.data.date_of_birth, 'YYYY-MM-DD').toDate();
+                                this.general.motto = this.data.motto;
+
+                                this.$axios.get('/api/auth/check/update/user/' + this.$route.params.id, {})
+                                    .then(response => {
+                                        this.permission.edit = response.data.success;
+                                    })
+                                    .catch(function (error) {
+                                        console.error(error);
+                                    });
+                            }
+
+                        })
+                        .catch(function (error) {
+                            console.error(error);
+                        });
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        })
     },
     methods: {
         edit(section) {
@@ -138,6 +241,7 @@ export default {
         },
         saveGeneral(ev) {
             ev.preventDefault()
+            if (!this.permission.edit) return;
             if (this.general.username && this.general.username.length > 0 &&
                 this.general.email && this.general.email.length > 0 &&
                 this.general.date_of_birth
@@ -167,6 +271,7 @@ export default {
         },
         saveNewPassword(ev) {
             ev.preventDefault()
+            if (!this.permission.edit) return;
             if (this.password.password && this.password.password.length > 0 &&
                 this.password.password_confirmation && this.password.password_confirmation.length > 0
             ) {
@@ -189,14 +294,6 @@ export default {
             } else {
                 emitter.$emit('notify', false, 'Campi obbligatori non compilati')
             }
-        }
-    },
-    watch: {
-        userData(newUserData, oldUserData) {
-            this.general.username = newUserData.username;
-            this.general.email = newUserData.email;
-            this.general.date_of_birth = moment(newUserData.date_of_birth, 'YYYY-MM-DD').toDate();
-            this.general.motto = newUserData.motto;
         }
     },
     beforeRouteEnter(to, from, next) {

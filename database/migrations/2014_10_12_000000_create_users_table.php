@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('motto')->nullable();
             $table->longText('description')->nullable();
             $table->json('socials')->nullable();
+            $table->dateTime('last_login', 0)->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

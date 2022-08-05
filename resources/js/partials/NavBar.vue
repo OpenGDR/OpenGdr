@@ -37,7 +37,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <router-link to="/utente/profilo" class="dropdown-item" href="#">Profilo</router-link>
+                                        <router-link :to="'/utente/profilo/' + userData.id" class="dropdown-item" href="#">Profilo</router-link>
                                     </li>
                                     <li><a class="dropdown-item" href="#">Another action</a></li>
                                     <li><a class="dropdown-item" href="#">Something else here</a></li>
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-
+import emitter from '../emitter'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -89,10 +89,15 @@ export default {
         logout(e) {
             e.preventDefault();
             this.$axios.get("/sanctum/csrf-cookie").then(response => {
+                emitter.$emit('loading', true);
                 this.$axios.post("/api/auth/logout")
                     .then(response => {
                         if (response.data.success) {
-                            window.location.href = "/";
+                            setTimeout(() => {
+                                window.openGDR.isLoggedin = false;
+                                emitter.$emit('user:update');
+                                window.location.href = "/";
+                            }, 1500);
                         }
                         else {
                             console.log(response);
