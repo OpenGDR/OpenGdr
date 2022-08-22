@@ -16,10 +16,10 @@ import Notifications from '@kyvg/vue3-notification'
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser, faPen, faCalendarDays, faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPen, faCalendarDays, faCircleExclamation, faShieldHalved, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add(faUser, faPen, faCalendarDays, faCircleExclamation)
+library.add(faUser, faPen, faCalendarDays, faCircleExclamation, faShieldHalved, faMagnifyingGlass)
 
 /**
  * Store data

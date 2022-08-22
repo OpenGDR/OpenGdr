@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 
 class PermissionController extends Controller
 {
+
     /**
      * Richiesta generale verifica dei permessi
      */

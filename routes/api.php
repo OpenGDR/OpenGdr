@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ * Parte pubblica
+ */
 Route::group(
     ['prefix' => 'auth'],
     function () {
@@ -24,18 +27,47 @@ Route::group(
         Route::post('recover-post', [UserController::class, 'recoverPost']);
         Route::post('register', [UserController::class, 'register']);
         Route::post('logout', [UserController::class, 'logout']);
-        Route::post('email-verify', [UserController::class, 'emailVerify'])->middleware('auth:sanctum');
-        Route::post('email-resend', [UserController::class, 'emailResend'])->middleware('auth:sanctum');
 
-        Route::get('check/{permission}/{model}/{id?}', [PermissionController::class, 'check']);
+        Route::group(
+            ['middleware' => 'auth:sanctum'],
+            function () {
+                Route::post('email-verify', [UserController::class, 'emailVerify']);
+                Route::post('email-resend', [UserController::class, 'emailResend']);
+                Route::group(
+                    ['prefix' => 'permission'],
+                    function () {
+                        Route::get('check/{permission}/{model}/{id?}', [PermissionController::class, 'check']);
+                    }
+                );
+            }
+        );
     }
 );
 
+/**
+ * Gestione utente
+ */
 Route::group(
     ['prefix' => 'user', 'middleware' => 'auth:sanctum'],
     function () {
         Route::get('data/{id?}', [UserController::class, 'getUserData']);
         Route::post('general', [UserController::class, 'updateUserDataGeneral']);
         Route::post('new-password', [UserController::class, 'updateUserPassword']);
+    }
+);
+
+
+/**
+ * Amministrazione
+ */
+Route::group(
+    ['prefix' => 'admin', 'middleware' => 'auth:sanctum'],
+    function () {
+        Route::group(
+            ['prefix' => 'user'],
+            function () {
+                Route::get('get-list', [UserController::class, 'getAdminListUsers']);
+            }
+        );
     }
 );

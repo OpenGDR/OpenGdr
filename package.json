@@ -26,6 +26,8 @@
         "@fortawesome/free-solid-svg-icons": "^6.1.2",
         "@fortawesome/vue-fontawesome": "^3.0.1",
         "@kyvg/vue3-notification": "^2.3.6",
+        "datatables.net-bs5": "^1.12.1",
+        "datatables.net-vue3": "^1.0.0",
         "moment": "^2.29.4",
         "tiny-emitter": "^2.1.0",
         "vue3-datepicker": "^0.3.4",

@@ -4,7 +4,13 @@ import { createStore } from "vuex";
 const storage = createStore({
     state: {
         loading: false,
-        user: {},
+        user: {
+            permissions: {
+                admin: {
+                    show: false
+                }
+            }
+        },
     },
     mutations: {
     },

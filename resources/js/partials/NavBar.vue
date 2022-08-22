@@ -44,14 +44,14 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-item dropdown" v-if="isAdmin">
+                            <li class="nav-item dropdown" v-if="isAdmin && userData.permissions.admin.show">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Amministratione
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Gestione Utenti</a></li>
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    <li v-if="userData.permissions.admin.user.list">
+                                         <router-link to="/admin/users/list" class="dropdown-item">Lista Utenti</router-link>
+                                    </li>
                                 </ul>
                             </li>
 

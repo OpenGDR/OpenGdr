@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
@@ -255,5 +256,21 @@ class UserController extends Controller
         $user->save();
 
         return $this->sendResponseAPI(true, 'Update successfully');
+    }
+
+
+    /**
+     * Restituisce la lista degli utenti
+     */
+    public function getAdminListUsers(Request $request)
+    {
+        if (!Gate::allows('viewAny', new User())) {
+            abort(403);
+        }
+
+        $data = User::withTrashed()->get();
+        return DataTables::of($data)->addIndexColumn()
+            ->rawColumns(['action'])
+            ->make(true);
     }
 }

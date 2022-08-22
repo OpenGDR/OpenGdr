@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Gate;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -63,7 +64,7 @@ class User extends Authenticatable
     /**
      * appends custom attributes
      */
-    protected $appends = ['level_label'];
+    protected $appends = ['level_label', 'status_label', 'permissions'];
 
     /**
      * Livelli Utente
@@ -80,6 +81,9 @@ class User extends Authenticatable
         return $this->level == User::LEVEL_ADMIN;
     }
 
+    /**
+     * Verifica se l'utente non è bannato
+     */
     public function isNotBanned()
     {
         return $this->banned == 0;
@@ -101,5 +105,49 @@ class User extends Authenticatable
                 return 'Utente';
                 break;
         }
+    }
+
+    /**
+     * Restituisce la label del livello utente
+     *
+     * @return void
+     */
+    public function getStatusLabelAttribute()
+    {
+        if (!$this->isNotBanned()) {
+            return 'Bannato';
+        }
+
+        if (!$this->email_verified_at) {
+            return 'Non attivo';
+        }
+        if ($this->deleted_at) {
+            return 'Cancellato';
+        }
+
+        return 'Attivo';
+    }
+
+    /**
+     * Richiesta dei permessi generale dell'attuale utente
+     *
+     * todo: implementazione costante con i vari permessi generali dell'utente
+     */
+    public function getPermissionsAttribute()
+    {
+        $permissions = [
+            'admin' => ['show' => false]
+        ];
+
+        if ($this->isAdmin()) {
+            $permissions['admin'] = [
+                'show' => $this->isAdmin(),
+                'user' => [
+                    'list' => Gate::allows('viewAny', $this),
+                ]
+            ];
+        }
+
+        return $permissions;
     }
 }

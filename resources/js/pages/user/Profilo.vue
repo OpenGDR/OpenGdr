@@ -185,8 +185,9 @@ export default {
     mounted() {
 
         this.$axios.get('/sanctum/csrf-cookie').then(response => {
-            this.$axios.get('/api/auth/check/view/user/' + this.$route.params.id, {})
+            this.$axios.get('/api/auth/permission/check/view/user/' + this.$route.params.id, {})
                 .then(response => {
+
                     if (!response.data.success) {
                         emitter.$emit('notify', response.data.success, response.data.message);
                         this.$router.push('/');
@@ -209,7 +210,7 @@ export default {
                                 this.general.date_of_birth = moment(this.data.date_of_birth, 'YYYY-MM-DD').toDate();
                                 this.general.motto = this.data.motto;
 
-                                this.$axios.get('/api/auth/check/update/user/' + this.$route.params.id, {})
+                                this.$axios.get('/api/auth/permission/check/update/user/' + this.$route.params.id, {})
                                     .then(response => {
                                         this.permission.edit = response.data.success;
                                     })
