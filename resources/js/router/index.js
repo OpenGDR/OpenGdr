@@ -29,6 +29,7 @@ import Dashboard from '../pages/Dashboard.vue';
  * Amministrazione
  */
 import AdminUserList from '../pages/admin/user/List.vue';
+import AdminLogList from '../pages/admin/log/List.vue';
 
 export const routes = [
     {
@@ -85,6 +86,11 @@ export const routes = [
         name: 'admin-lista-utenti',
         path: '/admin/users/list',
         component: AdminUserList
+    },
+    {
+        name: 'admin-lista-log',
+        path: '/admin/log/list',
+        component: AdminLogList
     }
 ];
 

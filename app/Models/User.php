@@ -144,6 +144,9 @@ class User extends Authenticatable
                 'show' => $this->isAdmin(),
                 'user' => [
                     'list' => Gate::allows('viewAny', $this),
+                ],
+                'log' => [
+                    'list' => Gate::allows('viewAny', new Log()),
                 ]
             ];
         }

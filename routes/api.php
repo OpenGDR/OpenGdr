@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\LogController;
 use App\Http\Controllers\API\PermissionController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
@@ -67,6 +68,12 @@ Route::group(
             ['prefix' => 'user'],
             function () {
                 Route::get('get-list', [UserController::class, 'getAdminListUsers']);
+            }
+        );
+        Route::group(
+            ['prefix' => 'log'],
+            function () {
+                Route::get('get-list', [LogController::class, 'getAdminList']);
             }
         );
     }

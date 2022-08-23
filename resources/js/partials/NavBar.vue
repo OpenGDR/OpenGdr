@@ -52,6 +52,9 @@
                                     <li v-if="userData.permissions.admin.user.list">
                                          <router-link to="/admin/users/list" class="dropdown-item">Lista Utenti</router-link>
                                     </li>
+                                    <li v-if="userData.permissions.admin.log.list">
+                                         <router-link to="/admin/log/list" class="dropdown-item">Log Attività</router-link>
+                                    </li>
                                 </ul>
                             </li>
 

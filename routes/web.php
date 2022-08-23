@@ -18,4 +18,6 @@ Route::get('/recupero-password/{token}/', [HomeController::class, 'recoverPasswo
 Route::get('email/verify/{id}/{hash}', [HomeController::class, 'app'])->name('verification.verify');
 Route::post('email/resend', [HomeController::class, 'app'])->name('verification.resend');
 
+Route::post('utente/profilo/{id}', [HomeController::class, 'app'])->name('user.profile');
+
 Route::get('{any}', [HomeController::class, 'app'])->where('any', '.*');

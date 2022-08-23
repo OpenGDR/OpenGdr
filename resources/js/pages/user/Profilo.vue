@@ -53,8 +53,8 @@
                         </div>
                     </div>
                     <div class="card-footer justify-content-end d-flex" v-if="data.id != userData.id && data.level != 1">
-                        <button v-if="data.banned == 0" type="button" @click="bannedUser" class="btn btn-danger">Banna</button>
-                        <button v-else type="button" @click="bannedUser" class="btn btn-outline-danger">Rimuovi ban</button>
+                        <button v-if="data.banned == 0" type="button" @click="banUser" class="btn btn-danger">Banna</button>
+                        <button v-else type="button" @click="banUser" class="btn btn-outline-danger">Rimuovi ban</button>
                     </div>
                 </div>
 
@@ -295,6 +295,24 @@ export default {
             } else {
                 emitter.$emit('notify', false, 'Campi obbligatori non compilati')
             }
+        },
+        banUser(ev) {
+            /* ev.preventDefault();
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.post('/api/user/ban', {})
+                    .then(response => {
+                        if (!response.data.success) {
+                            this.edit('general');
+                            this.error.general = response.data.data;
+                        }
+                        emitter.$emit('loading', false);
+                        emitter.$emit('notify', response.data.success, response.data.message);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        emitter.$emit('loading', false);
+                    });
+            }) */
         }
     },
     beforeRouteEnter(to, from, next) {

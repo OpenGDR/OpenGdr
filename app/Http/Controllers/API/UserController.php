@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use App\Models\Log;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
@@ -68,6 +69,8 @@ class UserController extends Controller
 
             $user->last_login = Carbon::now();
             $user->save();
+
+            Log::write(Log::LEVEL_NOTICE, 'login', 'User', $user->id);
 
             return $this->sendResponseAPI(true, 'User login successfully');
         } else {
@@ -149,6 +152,8 @@ class UserController extends Controller
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
+
+        Log::write(Log::LEVEL_NOTICE, 'verifica email', 'User', $request->user()->id);
 
         return $this->sendResponseAPI(true, 'Email Verified');
     }
@@ -257,7 +262,6 @@ class UserController extends Controller
 
         return $this->sendResponseAPI(true, 'Update successfully');
     }
-
 
     /**
      * Restituisce la lista degli utenti
