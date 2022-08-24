@@ -79,4 +79,15 @@ class UserPolicy
     {
         return ($user->isAdmin() && !$model->isAdmin());
     }
+    /**
+     * Determina quando un utente ne può bannare un'altro
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $model
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function ban(User $user, User $model)
+    {
+        return ($user->isAdmin() && !$model->isAdmin());
+    }
 }

@@ -53,7 +53,10 @@
                         </div>
                     </div>
                     <div class="card-footer justify-content-end d-flex" v-if="data.id != userData.id && data.level != 1">
-                        <button v-if="data.banned == 0" type="button" @click="banUser" class="btn btn-danger">Banna</button>
+
+                        <button v-if="data.banned == 0" type="button" class="btn btn-danger" @click="showModalBan=true">
+                            Banna utente
+                        </button>
                         <button v-else type="button" @click="banUser" class="btn btn-outline-danger">Rimuovi ban</button>
                     </div>
                 </div>
@@ -109,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col col-lg-6" v-if="permission.edit">
+            <div class="col col-lg-6" v-if="permission.edit && data.id == userData.id">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <h2 class="me-auto h5">
@@ -140,6 +143,30 @@
             </div>
         </div>
     </div>
+    <template v-if="data.id != userData.id && data.level != 1">
+        <div class="modal-backdrop fade show" v-if="showModalBan"></div>
+            <div class="modal fade"
+                :class="{ 'show': showModalBan, 'd-block': showModalBan }"
+                tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Banna Utente</h5>
+                        <button type="button" class="btn-close" aria-label="Close" @click="showModalBan = false"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="banNote" class="form-label">Motivazione del ban</label>
+                        <textarea class="form-control" id="banNote" rows="3" v-model="banNote"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @click="showModalBan = false">Annulla</button>
+                    <button type="button" class="btn btn-danger" @click="banUser">Banna</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
 </template>
 <script>
 import Datepicker from 'vue3-datepicker';
@@ -148,7 +175,7 @@ import emitter from '../../emitter'
 import { mapGetters } from 'vuex'
 export default {
     components: {
-        Datepicker
+        Datepicker,
     },
     computed: {
         ...mapGetters([
@@ -161,6 +188,8 @@ export default {
         return {
             data: {},
             editSection: [],
+            showModalBan: false,
+            banNote: '',
             permission: {
                 edit: false
             },
@@ -183,53 +212,58 @@ export default {
         }
     },
     mounted() {
-
-        this.$axios.get('/sanctum/csrf-cookie').then(response => {
-            this.$axios.get('/api/auth/permission/check/view/user/' + this.$route.params.id, {})
-                .then(response => {
-
-                    if (!response.data.success) {
-                        emitter.$emit('notify', response.data.success, response.data.message);
-                        this.$router.push('/');
-                        return;
-                    }
-                    this.$axios.get('/api/user/data/' + this.$route.params.id, {})
-                        .then(response => {
-                            if (!response.data.success) {
-                                emitter.$emit('notify', response.data.success, response.data.message);
-                                this.$router.push('/');
-                                return;
-                            } else {
-                                this.data = response.data.data;
-                                this.general.id = this.data.id;
-                                this.password.id = this.data.id;
-
-
-                                this.general.username = this.data.username;
-                                this.general.email = this.data.email;
-                                this.general.date_of_birth = moment(this.data.date_of_birth, 'YYYY-MM-DD').toDate();
-                                this.general.motto = this.data.motto;
-
-                                this.$axios.get('/api/auth/permission/check/update/user/' + this.$route.params.id, {})
-                                    .then(response => {
-                                        this.permission.edit = response.data.success;
-                                    })
-                                    .catch(function (error) {
-                                        console.error(error);
-                                    });
-                            }
-
-                        })
-                        .catch(function (error) {
-                            console.error(error);
-                        });
-                })
-                .catch(function (error) {
-                    console.error(error);
-                });
-        })
+        this.loadingUserData();
     },
     methods: {
+        loadingUserData() {
+
+            this.$axios.get('/sanctum/csrf-cookie').then(response => {
+                this.$axios.get('/api/auth/permission/check/view/user/' + this.$route.params.id, {})
+                    .then(response => {
+
+                        if (!response.data.success) {
+                            emitter.$emit('notify', response.data.success, response.data.message);
+                            this.$router.push('/');
+                            return;
+                        }
+                        this.$axios.get('/api/user/data/' + this.$route.params.id, {})
+                            .then(response => {
+                                if (!response.data.success) {
+                                    emitter.$emit('notify', response.data.success, response.data.message);
+                                    this.$router.push('/');
+                                    return;
+                                } else {
+                                    this.data = response.data.data;
+                                    this.general.id = this.data.id;
+                                    this.password.id = this.data.id;
+
+
+                                    this.general.username = this.data.username;
+                                    this.general.email = this.data.email;
+                                    this.general.date_of_birth = moment(this.data.date_of_birth, 'YYYY-MM-DD').toDate();
+                                    this.general.motto = this.data.motto;
+
+                                    this.$axios.get('/api/auth/permission/check/update/user/' + this.$route.params.id, {})
+                                        .then(response => {
+                                            this.permission.edit = response.data.success;
+                                        })
+                                        .catch(function (error) {
+                                            console.error(error);
+                                        });
+
+                                    emitter.$emit('loading', false);
+                                }
+
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                            });
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                    });
+            })
+        },
         edit(section) {
             if (this.editSection.includes(section)) {
                 let index = this.editSection.indexOf(section);
@@ -297,22 +331,28 @@ export default {
             }
         },
         banUser(ev) {
-            /* ev.preventDefault();
+            ev.preventDefault();
+            emitter.$emit('loading', true);
+            this.showModalBan = false;
             this.$axios.get('/sanctum/csrf-cookie').then(response => {
-                this.$axios.post('/api/user/ban', {})
+                this.$axios.post('/api/admin/user/ban', {
+                    note: this.banNote,
+                    id: this.general.id,
+                })
                     .then(response => {
                         if (!response.data.success) {
                             this.edit('general');
                             this.error.general = response.data.data;
                         }
-                        emitter.$emit('loading', false);
+                        this.banNote = '';
                         emitter.$emit('notify', response.data.success, response.data.message);
+                        this.loadingUserData();
                     })
                     .catch(function (error) {
                         console.error(error);
                         emitter.$emit('loading', false);
                     });
-            }) */
+            })
         }
     },
     beforeRouteEnter(to, from, next) {

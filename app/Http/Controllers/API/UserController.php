@@ -277,4 +277,35 @@ class UserController extends Controller
             ->rawColumns(['action'])
             ->make(true);
     }
+
+    /**
+     * Gestione ban utente
+     */
+    public function ban(Request $request)
+    {
+        $value = $request->validate([
+            'id' => ['required'],
+            'note' => []
+        ]);
+        $user = User::where('id', $value['id'])->first();
+
+        if (!Gate::allows('ban', $user)) {
+            abort(403);
+        }
+        if ($user->banned) {
+
+            Log::write(Log::LEVEL_NOTICE, 'unban', 'User', $user->id, $value['note']);
+            $user->banned = false;
+            $user->banned_at = null;
+            $user->save();
+
+            return $this->sendResponseAPI(true, 'Update unbanned successfully');
+        } else {
+            Log::write(Log::LEVEL_NOTICE, 'ban', 'User', $user->id, $value['note']);
+            $user->banned = true;
+            $user->banned_at = Carbon::now();
+            $user->save();
+            return $this->sendResponseAPI(true, 'Update banned successfully');
+        }
+    }
 }

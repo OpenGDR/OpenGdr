@@ -68,6 +68,7 @@ Route::group(
             ['prefix' => 'user'],
             function () {
                 Route::get('get-list', [UserController::class, 'getAdminListUsers']);
+                Route::post('ban', [UserController::class, 'ban']);
             }
         );
         Route::group(
