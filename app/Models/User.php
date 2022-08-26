@@ -145,6 +145,11 @@ class User extends Authenticatable
                 'user' => [
                     'list' => Gate::allows('viewAny', $this),
                 ],
+                'race' => [
+                    'list' => Gate::allows('viewAny', new Race()),
+                    'create' => Gate::allows('create', new Race()),
+                    'update' => Gate::allows('update', new Race()),
+                ],
                 'log' => [
                     'list' => Gate::allows('viewAny', new Log()),
                 ]

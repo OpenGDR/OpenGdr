@@ -29,6 +29,8 @@ import Dashboard from '../pages/Dashboard.vue';
  * Amministrazione
  */
 import AdminUserList from '../pages/admin/user/List.vue';
+import AdminRaceList from '../pages/admin/race/List.vue';
+import AdminRaceEdit from '../pages/admin/race/Edit.vue';
 import AdminLogList from '../pages/admin/log/List.vue';
 
 export const routes = [
@@ -86,6 +88,16 @@ export const routes = [
         name: 'admin-lista-utenti',
         path: '/admin/users/list',
         component: AdminUserList
+    },
+    {
+        name: 'admin-lista-razze',
+        path: '/admin/race/list',
+        component: AdminRaceList
+    },
+    {
+        name: 'utente-profilo',
+        path: '/admin/race/update/:slug?',
+        component: AdminRaceEdit
     },
     {
         name: 'admin-lista-log',

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\LogController;
 use App\Http\Controllers\API\PermissionController;
+use App\Http\Controllers\API\RaceController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,13 @@ Route::group(
             ['prefix' => 'log'],
             function () {
                 Route::get('get-list', [LogController::class, 'getAdminList']);
+            }
+        );
+        Route::group(
+            ['prefix' => 'race'],
+            function () {
+                Route::get('get-list', [RaceController::class, 'getAdminList']);
+                Route::get('data/{id?}', [RaceController::class, 'getRaceData']);
             }
         );
     }

@@ -10,7 +10,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-3" v-if="isAdmin && !generalLoading">
+        <div class="row mb-3" v-if="!generalLoading">
             <div class="col">
 
                 <DataTable

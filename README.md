@@ -22,3 +22,4 @@ L'utente è inserito di default nel seeder con altre utenze create random
 -   [x] [Vuex](https://vuex.vuejs.org/)
 -   [x] [Vue Notification](https://www.npmjs.com/package/@kyvg/vue3-notification)
 -   [x] [Tiny Emitter](https://github.com/scottcorgan/tiny-emitter)
+-   [x] [Tiny Mce](https://www.tiny.cloud/blog/tinymce-vue-3-support/)

@@ -5,7 +5,7 @@
                 <div class=" d-flex align-items-center p-3 text-white bg-primary rounded shadow-sm ">
                     <font-awesome-icon icon="fa-solid fa-shield-halved" class="fa-2x" />
                     <div class="lh-1 ms-3">
-                        <h1 class="h5 mb-0 text-white lh-1 mb-1">Amministrazione: <strong>Lista Attività</strong></h1>
+                        <h1 class="h5 mb-0 text-white lh-1 mb-1">Amministrazione: <strong>Lista Razze</strong></h1>
                     </div>
                 </div>
             </div>
@@ -18,33 +18,30 @@
                 :options="{
                     processing: true,
                     serverSide: true,
-                    order: [[0, 'desc']]
                 }"
-                ajax="/api/admin/log/get-list"
+                ajax="/api/admin/race/get-list"
                 class="table table-hover table-striped"
                 width="100%"
                 >
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tipologia</th>
-                        <th>Livello</th>
-                        <th>Modello</th>
-                        <th>ID Correlato</th>
-                        <th>Note</th>
-                        <th>Creato il</th>
+                        <th>Nome</th>
+                        <th>Conteggio</th>
+                        <th>Visibile</th>
+                        <th>Aperta</th>
+                        <th>Registrazione</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Tipologia</th>
-                        <th>Livello</th>
-                        <th>Modello</th>
-                        <th>ID Correlato</th>
-                        <th>Note</th>
-                        <th>Creato il</th>
+                        <th>Nome</th>
+                        <th>Conteggio</th>
+                        <th>Visibile</th>
+                        <th>Aperta</th>
+                        <th>Registrazione</th>
                         <th></th>
                     </tr>
                 </tfoot>
@@ -80,12 +77,19 @@ export default {
         return {
             columns: [
                 { data: 'id' },
-                { data: 'type' },
-                { data: 'label_level' },
-                { data: 'model' },
-                { data: 'related_id' },
-                { data: 'note' },
-                { data: 'created_at' },
+                { data: 'name' },
+                { data: 'counter' },
+                {
+                    data: 'visible',
+                    render: this.formatCheck
+                },
+                {
+                    data: 'open',
+                    render: this.formatCheck
+                },
+                {
+                    data: 'enable_for_registration',
+                    render: this.formatCheck },
                 {
                     data: null,
                     render: this.formatAction
@@ -113,10 +117,13 @@ export default {
     methods: {
         formatAction(data, type, row) {
             this.$forceUpdate();
-            if (data.related_link) {
-                return '<a href="' + data.related_link + '" class="btn btn-primary">Vedi</a>';
+            return '<a href="' + data.link_edit + '" class="btn btn-primary">Modifica</a>';
+        },
+        formatCheck(data, type, row) {
+            if (data == '1') {
+                return '<span class="badge text-bg-success">SI</span>';
             } else {
-                return '';
+                return '<span class="badge text-bg-danger">NO</span>';
             }
         }
     },

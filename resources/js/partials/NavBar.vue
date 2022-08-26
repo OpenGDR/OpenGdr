@@ -50,7 +50,10 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li v-if="userData.permissions.admin.user.list">
-                                         <router-link to="/admin/users/list" class="dropdown-item">Lista Utenti</router-link>
+                                         <router-link to="/admin/users/list" class="dropdown-item">Utenti</router-link>
+                                    </li>
+                                    <li v-if="userData.permissions.admin.race.list">
+                                         <router-link to="/admin/race/list" class="dropdown-item">Razze</router-link>
                                     </li>
                                     <li v-if="userData.permissions.admin.log.list">
                                          <router-link to="/admin/log/list" class="dropdown-item">Log Attività</router-link>

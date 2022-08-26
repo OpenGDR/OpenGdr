@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Race;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +21,9 @@ class PermissionController extends Controller
             case 'user':
                 $defModel = new User();
                 break;
+            case 'race':
+                $defModel = new Race();
+                break;
             default:
                 return $this->sendResponseAPI(false, 'Model not found');
         }
@@ -29,7 +33,11 @@ class PermissionController extends Controller
         } else if ($id == 'current-user') {
             $response = Gate::allows($permission, $request->user());
         } else {
-            $elm = $defModel->where('id', $id)->first();
+            if ($model == 'race') {
+                $elm = $defModel->where('slug', $id)->first();
+            } else {
+                $elm = $defModel->where('id', $id)->first();
+            }
             if ($elm) {
                 $response = Gate::allows($permission, $elm);
             } else {

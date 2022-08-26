@@ -20,4 +20,6 @@ Route::post('email/resend', [HomeController::class, 'app'])->name('verification.
 
 Route::post('utente/profilo/{id}', [HomeController::class, 'app'])->name('user.profile');
 
+Route::post('/admin/race/update/{slug?}', [HomeController::class, 'app'])->name('admin.race.update');
+
 Route::get('{any}', [HomeController::class, 'app'])->where('any', '.*');
