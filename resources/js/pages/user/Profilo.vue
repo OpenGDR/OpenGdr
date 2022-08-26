@@ -2,7 +2,11 @@
     <div class="container">
         <div class="row mb-3">
             <div class="col">
-                <div class=" d-flex align-items-center p-3 text-white bg-primary rounded shadow-sm ">
+                <div class=" d-flex align-items-center p-3 text-white rounded shadow-sm "
+                :class="{
+                    'bg-danger': data.banned == 1,
+                    'bg-primary': data.banned == 0,
+                }">
                     <font-awesome-icon icon="fa-solid fa-user" class="fa-2x" />
                     <div class="lh-1 ms-3">
                         <h1 class="h5 mb-0 text-white lh-1 mb-1">Profilo utente : <strong>{{ data.username }}</strong></h1>
@@ -214,13 +218,19 @@ export default {
     mounted() {
         this.loadingUserData();
     },
+    watch: {
+        $route(to, from) {
+            if (to.name == "utente-profilo") {
+                this.loadingUserData();
+            }
+        }
+    },
     methods: {
         loadingUserData() {
-
+            emitter.$emit('loading', true);
             this.$axios.get('/sanctum/csrf-cookie').then(response => {
                 this.$axios.get('/api/auth/permission/check/view/user/' + this.$route.params.id, {})
                     .then(response => {
-
                         if (!response.data.success) {
                             emitter.$emit('notify', response.data.success, response.data.message);
                             this.$router.push('/');
@@ -250,7 +260,7 @@ export default {
                                         .catch(function (error) {
                                             console.error(error);
                                         });
-
+                                    this.$forceUpdate();
                                     emitter.$emit('loading', false);
                                 }
 
